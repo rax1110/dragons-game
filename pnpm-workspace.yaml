@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  '@scarf/scarf': false
+
+catalog:
+  '@types/node': ^24.19.1
+  oxlint: ^1.87.0
+  prettier: ^3.9.9
+  typescript: ~6.0.3
+  vitest: ^5.0.3
+  zod: ^4.6.5

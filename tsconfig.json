@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/game-core/tsconfig.build.json" },
+    { "path": "packages/game-core" },
+    { "path": "apps/api" },
+    { "path": "apps/web" }
+  ]
+}

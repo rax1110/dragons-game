@@ -1,0 +1,9 @@
+name: dragons
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+    ports:
+      - '3000:3000'

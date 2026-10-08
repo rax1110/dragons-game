@@ -1,0 +1,21 @@
+{
+  "name": "dragons-of-mugloar",
+  "private": true,
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @dragons/game-core build && pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "tsc -b",
+    "lint": "oxlint && prettier --check .",
+    "format": "prettier --write .",
+    "test": "pnpm --filter @dragons/game-core build && pnpm -r test"
+  },
+  "devDependencies": {
+    "oxlint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  }
+}

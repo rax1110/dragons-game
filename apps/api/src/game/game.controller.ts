@@ -1,13 +1,11 @@
 import {
   AdIdSchema,
-  AdSchema,
-  BuyResultSchema,
   GameIdSchema,
-  GameStateSchema,
+  GameSnapshotSchema,
   ItemIdSchema,
-  ReputationSchema,
-  ShopItemSchema,
-  SolveResultSchema,
+  RankedAdSchema,
+  ReputationReportSchema,
+  TurnEventSchema,
   type AdId,
   type GameId,
   type ItemId,
@@ -19,59 +17,82 @@ import {
   HttpStatus,
   Param,
   Post,
+  Res,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { UpstreamClient } from './upstream.client.ts';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import type { Response } from 'express';
+import { GameService } from './game.service.ts';
 
 const GameIdParam = () => Param('gameId', { schema: GameIdSchema });
 
 @ApiTags('games')
 @Controller('games')
 export class GameController {
-  constructor(private readonly upstream: UpstreamClient) {}
+  constructor(private readonly games: GameService) {}
 
   @Post()
-  @ApiCreatedResponse({ standardSchema: GameStateSchema })
+  @ApiCreatedResponse({ standardSchema: GameSnapshotSchema })
   createGame() {
-    return this.upstream.createGame();
+    return this.games.createGame();
+  }
+
+  @Get(':gameId')
+  @ApiOkResponse({ standardSchema: GameSnapshotSchema })
+  getGame(@GameIdParam() gameId: GameId) {
+    return this.games.getGame(gameId);
   }
 
   @Get(':gameId/ads')
-  @ApiOkResponse({ standardSchema: AdSchema.array() })
+  @ApiOkResponse({ standardSchema: RankedAdSchema.array() })
   getAds(@GameIdParam() gameId: GameId) {
-    return this.upstream.getAds(gameId);
+    return this.games.getAds(gameId);
   }
 
   @Post(':gameId/ads/:adId/solve')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ standardSchema: SolveResultSchema })
+  @ApiOkResponse({ standardSchema: TurnEventSchema })
   solveAd(
     @GameIdParam() gameId: GameId,
     @Param('adId', { schema: AdIdSchema }) adId: AdId,
   ) {
-    return this.upstream.solveAd(gameId, adId);
-  }
-
-  @Get(':gameId/shop')
-  @ApiOkResponse({ standardSchema: ShopItemSchema.array() })
-  getShop(@GameIdParam() gameId: GameId) {
-    return this.upstream.getShop(gameId);
+    return this.games.solveAd(gameId, adId);
   }
 
   @Post(':gameId/shop/:itemId')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ standardSchema: BuyResultSchema })
+  @ApiOkResponse({ standardSchema: TurnEventSchema })
   buyItem(
     @GameIdParam() gameId: GameId,
     @Param('itemId', { schema: ItemIdSchema }) itemId: ItemId,
   ) {
-    return this.upstream.buyItem(gameId, itemId);
+    return this.games.buyItem(gameId, itemId);
+  }
+
+  @Post(':gameId/turns')
+  @ApiOkResponse({ standardSchema: TurnEventSchema })
+  @ApiNoContentResponse({
+    description: 'The game is over or the bot has nothing left to do',
+  })
+  async playTurn(
+    @GameIdParam() gameId: GameId,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const event = await this.games.playTurn(gameId);
+
+    response.status(event ? HttpStatus.OK : HttpStatus.NO_CONTENT);
+
+    return event;
   }
 
   @Post(':gameId/reputation')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ standardSchema: ReputationSchema })
+  @ApiOkResponse({ standardSchema: ReputationReportSchema })
   investigateReputation(@GameIdParam() gameId: GameId) {
-    return this.upstream.investigateReputation(gameId);
+    return this.games.investigateReputation(gameId);
   }
 }

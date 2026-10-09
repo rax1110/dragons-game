@@ -1,4 +1,8 @@
-import type { BuyResult, GameState, SolveResult } from './game-api.ts';
+import type {
+  BuyResult,
+  GameState,
+  SolveResult,
+} from '../contract/game-api.ts';
 
 export const applySolve = (
   state: GameState,

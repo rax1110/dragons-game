@@ -1,4 +1,8 @@
-import { GameApiError, GameApiErrorKind } from '@dragons/game-core';
+import {
+  GameApiError,
+  GameApiErrorKind,
+  type ApiError,
+} from '@dragons/game-core';
 import {
   Catch,
   HttpStatus,
@@ -18,7 +22,11 @@ const STATUS_BY_KIND: Record<GameApiErrorKind, HttpStatus> = {
 export class GameApiErrorFilter implements ExceptionFilter<GameApiError> {
   catch(error: GameApiError, host: ArgumentsHost) {
     const statusCode = STATUS_BY_KIND[error.kind];
-    const body = { statusCode, kind: error.kind, message: error.message };
+    const body: ApiError = {
+      statusCode,
+      kind: error.kind,
+      message: error.message,
+    };
 
     host.switchToHttp().getResponse<Response>().status(statusCode).json(body);
   }

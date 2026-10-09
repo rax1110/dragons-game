@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { fixtures } from './fixtures.ts';
-import { ShopItemSchema, ShopSchema } from './game-api.ts';
+import { ShopItemSchema, ShopSchema } from '../contract/game-api.ts';
+import { fixtures } from '../fixtures.ts';
 import {
   findCheapestUpgrade,
   findPotion,
   getLevelsGained,
   POTION_ID,
-} from './shop.ts';
+} from './catalog.ts';
 
 const shop = ShopSchema.parse(fixtures.shop);
 
-describe('shop', () => {
+describe('shop catalog', () => {
   it('finds the healing potion', () => {
     expect(findPotion(shop)?.name).toBe('Healing potion');
   });

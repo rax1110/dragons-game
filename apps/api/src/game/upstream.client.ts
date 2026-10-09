@@ -7,6 +7,7 @@ import {
   RawAdSchema,
   ReputationSchema,
   ShopSchema,
+  sleep,
   SolveResultSchema,
   type Ad,
   type AdId,
@@ -30,8 +31,6 @@ const ERROR_KIND_BY_STATUS = new Map<number, GameApiErrorKind>([
   [HttpStatus.NOT_FOUND, GameApiErrorKind.NotFound],
   [HttpStatus.GONE, GameApiErrorKind.GameOver],
 ]);
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const isRetryable = (error: unknown) =>
   error instanceof GameApiError && error.kind === GameApiErrorKind.Unavailable;

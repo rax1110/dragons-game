@@ -46,6 +46,15 @@ export const AdSchema = z.object({
 });
 export type Ad = z.infer<typeof AdSchema>;
 
+export const RankedAdSchema = AdSchema.extend({
+  successRate: z.number(),
+  expectedValue: z.number(),
+  harmful: z.boolean(),
+  viable: z.boolean(),
+  recommended: z.boolean(),
+});
+export type RankedAd = z.infer<typeof RankedAdSchema>;
+
 export const SolveResultSchema = z.object({
   success: z.boolean(),
   lives: z.number().int(),
@@ -84,6 +93,39 @@ export const ReputationSchema = z.object({
 });
 export type Reputation = z.infer<typeof ReputationSchema>;
 
+export const ReputationReportSchema = z.object({
+  reputation: ReputationSchema,
+  state: GameStateSchema,
+});
+export type ReputationReport = z.infer<typeof ReputationReportSchema>;
+
+export const GameSnapshotSchema = z.object({
+  state: GameStateSchema,
+  shop: z.array(ShopItemSchema),
+});
+export type GameSnapshot = z.infer<typeof GameSnapshotSchema>;
+
+export const ActionType = {
+  Solve: 'solve',
+  Buy: 'buy',
+  Stop: 'stop',
+} as const;
+
+export const MoveSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal(ActionType.Solve), ad: RankedAdSchema }),
+  z.object({ type: z.literal(ActionType.Buy), item: ShopItemSchema }),
+]);
+export type Move = z.infer<typeof MoveSchema>;
+export type Action = Move | { type: typeof ActionType.Stop };
+
+export const TurnEventSchema = z.object({
+  move: MoveSchema,
+  state: GameStateSchema,
+  message: z.string(),
+  succeeded: z.boolean(),
+});
+export type TurnEvent = z.infer<typeof TurnEventSchema>;
+
 export interface GameApi {
   createGame(): Promise<GameState>;
   getAds(gameId: GameId): Promise<Ad[]>;
@@ -115,3 +157,10 @@ export class GameApiError extends Error {
     this.kind = kind;
   }
 }
+
+export const ApiErrorSchema = z.object({
+  statusCode: z.number().int(),
+  kind: z.enum(GameApiErrorKind),
+  message: z.string(),
+});
+export type ApiError = z.infer<typeof ApiErrorSchema>;

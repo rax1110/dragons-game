@@ -1,4 +1,4 @@
-import type { ShopItem } from './game-api.ts';
+import type { ShopItem } from '../contract/game-api.ts';
 
 export const POTION_ID = 'hpot';
 

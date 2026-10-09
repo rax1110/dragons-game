@@ -1,0 +1,67 @@
+.factions {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.faction {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  align-items: center;
+  gap: 0.75rem;
+
+  & dd {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 1.5rem;
+    background: rgb(255 255 255 / 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  & dd::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: var(--line);
+  }
+}
+
+.bar {
+  --fill: var(--safe);
+  position: absolute;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  appearance: none;
+
+  &::-webkit-progress-bar {
+    background: transparent;
+  }
+
+  &::-webkit-progress-value {
+    background: var(--fill);
+  }
+
+  &::-moz-progress-bar {
+    background: var(--fill);
+  }
+
+  [data-negative] & {
+    --fill: var(--deadly);
+    left: 0;
+    transform: scaleX(-1);
+  }
+}
+
+.value {
+  position: relative;
+  margin-left: auto;
+  padding-right: 0.5rem;
+  font-size: 0.85rem;
+}

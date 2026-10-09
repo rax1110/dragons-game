@@ -1,0 +1,46 @@
+.game {
+  display: grid;
+  gap: 1rem;
+}
+
+.board {
+  display: grid;
+  gap: 0.75rem;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: repeat(2, 1fr);
+
+    & > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.over {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.finalScore {
+  font-size: clamp(4rem, 18vw, 7rem);
+  color: var(--gold);
+  text-shadow: 0 0 40px rgb(242 193 78 / 0.4);
+}
+
+.verdict {
+  color: var(--muted);
+
+  &[data-reached] {
+    color: var(--safe);
+  }
+}

@@ -1,14 +1,13 @@
 import {
   ActionType,
   play,
+  TARGET_SCORE,
   type GameState,
   type TurnEvent,
 } from '@dragons/game-core';
 import { NestFactory } from '@nestjs/core';
 import { GameModule } from '../game/game.module.ts';
 import { UpstreamClient } from '../game/upstream.client.ts';
-
-const TARGET_SCORE = 1000;
 
 const formatMove = ({ move }: TurnEvent) =>
   move.type === ActionType.Solve

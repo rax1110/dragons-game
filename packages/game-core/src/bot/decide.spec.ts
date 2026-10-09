@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { ActionType, decide } from './decide.ts';
-import { fixtures } from './fixtures.ts';
+import { rankAds } from '../ads/ranking.ts';
 import {
+  ActionType,
   AdIdSchema,
   Encoding,
   GameStateSchema,
   ShopSchema,
   type Ad,
   type GameState,
-} from './game-api.ts';
+} from '../contract/game-api.ts';
+import { fixtures } from '../fixtures.ts';
+import { POTION_ID } from '../shop/catalog.ts';
+import { decide } from './decide.ts';
 import { POLICY } from './policy.ts';
-import { rankAds } from './ranking.ts';
-import { POTION_ID } from './shop.ts';
 
 const shop = ShopSchema.parse(fixtures.shop);
 
@@ -59,17 +60,23 @@ describe('decide', () => {
     });
   });
 
-  it('upgrades the dragon when healthy and the cheapest upgrade is affordable', () => {
-    expect(decide(buildState({ gold: 120 }), viable, shop, 0)).toMatchObject({
+  it('upgrades the dragon when healthy and a potion stays affordable afterwards', () => {
+    expect(decide(buildState({ gold: 150 }), viable, shop, 0)).toMatchObject({
       type: ActionType.Buy,
       item: { id: 'cs' },
+    });
+  });
+
+  it('keeps gold for a potion instead of upgrading', () => {
+    expect(decide(buildState({ gold: 120 }), viable, shop, 0)).toMatchObject({
+      type: ActionType.Solve,
     });
   });
 
   it('stops upgrading at the level cap', () => {
     expect(
       decide(
-        buildState({ gold: 120, level: POLICY.maxLevel }),
+        buildState({ gold: 500, level: POLICY.maxLevel }),
         viable,
         shop,
         0,
@@ -97,7 +104,13 @@ describe('decide', () => {
     });
   });
 
-  it('stops spending once the pool has been hopeless for a while', () => {
+  it('stops buying upgrades and passes once the pool has been hopeless for a while', () => {
+    expect(
+      decide(buildState({ gold: 1000 }), hopeless, shop, POLICY.hopelessAfter),
+    ).toMatchObject({ type: ActionType.Solve });
+  });
+
+  it('keeps healing while the pool is hopeless', () => {
     expect(
       decide(
         buildState({ lives: 1, gold: 1000 }),
@@ -105,7 +118,7 @@ describe('decide', () => {
         shop,
         POLICY.hopelessAfter,
       ),
-    ).toMatchObject({ type: ActionType.Solve });
+    ).toMatchObject({ item: { id: POTION_ID } });
   });
 
   it('stops when there is nothing to do', () => {

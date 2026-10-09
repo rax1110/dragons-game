@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AdIdSchema, Encoding, type Ad } from './game-api.ts';
+import { AdIdSchema, Encoding, type Ad } from '../contract/game-api.ts';
 import { rankAds } from './ranking.ts';
 
 const buildAd = (adId: string, overrides: Partial<Ad> = {}): Ad => ({

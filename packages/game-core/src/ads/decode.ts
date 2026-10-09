@@ -1,4 +1,9 @@
-import { AdIdSchema, Encoding, type Ad, type RawAd } from './game-api.ts';
+import {
+  AdIdSchema,
+  Encoding,
+  type Ad,
+  type RawAd,
+} from '../contract/game-api.ts';
 
 const utf8 = new TextDecoder('utf-8', { fatal: true });
 

@@ -1,8 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ActionType } from './decide.ts';
-import { decodeAd } from './decode.ts';
-import { fixtures } from './fixtures.ts';
+import { decodeAd } from '../ads/decode.ts';
 import {
+  ActionType,
   BuyResultSchema,
   GameApiError,
   GameApiErrorKind,
@@ -11,10 +10,12 @@ import {
   SolveResultSchema,
   type GameApi,
   type GameState,
-} from './game-api.ts';
-import { play, type TurnEvent } from './play.ts';
+  type TurnEvent,
+} from '../contract/game-api.ts';
+import { fixtures } from '../fixtures.ts';
+import { POTION_ID } from '../shop/catalog.ts';
+import { play } from './play.ts';
 import { POLICY } from './policy.ts';
-import { POTION_ID } from './shop.ts';
 
 const start = GameStateSchema.parse(fixtures.start);
 const viableAd = decodeAd(fixtures.plainAd);

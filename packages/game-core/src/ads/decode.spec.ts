@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { Encoding } from '../contract/game-api.ts';
+import { fixtures } from '../fixtures.ts';
 import { decodeAd, decodeAds } from './decode.ts';
-import { fixtures } from './fixtures.ts';
-import { Encoding } from './game-api.ts';
 
 describe('decodeAd', () => {
   it('keeps plain ads as they are', () => {

@@ -1,16 +1,8 @@
-import type { Ad } from './game-api.ts';
-import { POLICY } from './policy.ts';
+import { POLICY } from '../bot/policy.ts';
+import type { Ad, RankedAd } from '../contract/game-api.ts';
 import { deriveSuccessRate } from './probability.ts';
 
 const HARMFUL = /\bsteal\b|share some of the profits|\bkill\b|take the blame/i;
-
-export type RankedAd = Ad & {
-  successRate: number;
-  expectedValue: number;
-  harmful: boolean;
-  viable: boolean;
-  recommended: boolean;
-};
 
 type AssessedAd = Omit<RankedAd, 'recommended'>;
 

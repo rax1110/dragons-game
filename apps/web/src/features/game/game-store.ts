@@ -42,7 +42,7 @@ type GameData = {
   shop: ShopItem[];
   ads: RankedAd[];
   reputation: Reputation | null;
-  lastEvent: TurnEvent | null;
+  events: TurnEvent[];
   phase: Phase;
   error: string | null;
 };
@@ -66,7 +66,7 @@ const initialData: GameData = {
   shop: [],
   ads: [],
   reputation: null,
-  lastEvent: null,
+  events: [],
   phase: Phase.Idle,
   error: null,
 };
@@ -75,6 +75,9 @@ export const selectBusy = (store: GameStore) => store.phase !== Phase.Idle;
 
 export const selectRecommendedAd = (store: GameStore) =>
   store.ads.find((ad) => ad.recommended) ?? null;
+
+export const selectLastEvent = (store: GameStore) =>
+  store.events.at(-1) ?? null;
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -98,7 +101,10 @@ export const useGameStore = create<GameStore>()(
         loadAds(gameId).catch(() => null);
 
       const applyEvent = async (gameId: GameId, event: TurnEvent) => {
-        set({ state: event.state, lastEvent: event });
+        set(({ events }) => ({
+          state: event.state,
+          events: [...events, event],
+        }));
 
         if (canContinue(event.state)) await loadAds(gameId);
       };
@@ -185,6 +191,7 @@ export const useGameStore = create<GameStore>()(
               if (get().phase !== Phase.Autoplay) break;
 
               await sleep(AUTOPLAY_PAUSE_MS);
+
               event = await gameApi.playTurn(gameId);
             }
           } catch (error) {

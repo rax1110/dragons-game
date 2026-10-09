@@ -1,0 +1,16 @@
+.world {
+  position: relative;
+  aspect-ratio: 1;
+
+  @media (min-width: 64rem) {
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+
+  & canvas {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    image-rendering: pixelated;
+  }
+}

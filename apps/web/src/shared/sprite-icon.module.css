@@ -1,0 +1,6 @@
+.sprite {
+  flex: none;
+  object-fit: none;
+  image-rendering: pixelated;
+  vertical-align: middle;
+}

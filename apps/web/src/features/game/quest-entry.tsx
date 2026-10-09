@@ -1,7 +1,14 @@
 import { Encoding, type AdId, type RankedAd } from '@dragons/game-core';
-import { CoinIcon, HourglassIcon, SparklesIcon } from '../../shared/icons.tsx';
-import styles from './ad-card.module.css';
-import { deriveRisk, formatPercent, formatTurns } from './format.ts';
+import { Button } from '../../shared/button.tsx';
+import { SpriteIcon } from '../../shared/sprite-icon.tsx';
+import { Icons } from '../../shared/sprites.ts';
+import {
+  deriveRisk,
+  formatPercent,
+  formatTurns,
+  isLastChance,
+} from './format.ts';
+import styles from './quest-entry.module.css';
 
 type Props = {
   ad: RankedAd;
@@ -9,9 +16,10 @@ type Props = {
   onSolve: (adId: AdId) => void;
 };
 
-export const AdCard = ({ ad, disabled, onSolve }: Props) => (
+export const QuestEntry = ({ ad, disabled, onSolve }: Props) => (
   <article
-    className={styles.card}
+    className={styles.entry}
+    data-panel
     data-risk={deriveRisk(ad)}
     data-recommended={ad.recommended || undefined}
   >
@@ -21,7 +29,7 @@ export const AdCard = ({ ad, disabled, onSolve }: Props) => (
       </span>
       {ad.recommended && (
         <span className={styles.seal}>
-          <SparklesIcon size={14} />
+          <SpriteIcon frame={Icons.Chest} />
           Recommended
         </span>
       )}
@@ -30,6 +38,7 @@ export const AdCard = ({ ad, disabled, onSolve }: Props) => (
       )}
       {ad.harmful && (
         <span className={styles.chip} data-tone="warn">
+          <SpriteIcon frame={Icons.Skull} />
           Hurts reputation
         </span>
       )}
@@ -39,7 +48,7 @@ export const AdCard = ({ ad, disabled, onSolve }: Props) => (
       <div>
         <dt>Reward</dt>
         <dd>
-          <CoinIcon size={14} />
+          <SpriteIcon frame={Icons.Coin} />
           {ad.reward}
         </dd>
       </div>
@@ -49,19 +58,17 @@ export const AdCard = ({ ad, disabled, onSolve }: Props) => (
       </div>
       <div>
         <dt>Expires</dt>
-        <dd>
-          <HourglassIcon size={14} />
+        <dd data-urgent={isLastChance(ad) || undefined}>
           {formatTurns(ad.expiresIn)}
         </dd>
       </div>
     </dl>
-    <button
-      type="button"
-      data-variant={ad.recommended ? 'primary' : undefined}
+    <Button
+      variant={ad.recommended ? 'primary' : 'secondary'}
       disabled={disabled}
       onClick={() => onSolve(ad.adId)}
     >
       Solve
-    </button>
+    </Button>
   </article>
 );

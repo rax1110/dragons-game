@@ -3,15 +3,15 @@ import { fixtures } from '@dragons/game-core/fixtures';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { useGameStore } from './game-store.ts';
-import { ShopDialog } from './shop-dialog.tsx';
+import { MerchantDialog } from './merchant-dialog.tsx';
 
 const shop = ShopSchema.parse(fixtures.shop);
 
-describe('ShopDialog', () => {
+describe('MerchantDialog', () => {
   it('only lets the player buy what they can afford', () => {
     useGameStore.setState({ shop });
 
-    render(<ShopDialog open={true} gold={60} onClose={vi.fn()} />);
+    render(<MerchantDialog gold={60} onClose={vi.fn()} />);
 
     expect(
       screen.getByRole('button', { name: 'Buy Healing potion for 50 gold' }),

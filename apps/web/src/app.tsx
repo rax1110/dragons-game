@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Game } from './features/game/game.tsx';
 import { useGameStore } from './features/game/game-store.ts';
 import { Lobby } from './features/game/lobby.tsx';
-import ui from './shared/ui.module.css';
+import { Hint } from './shared/note.tsx';
 
 export const App = () => {
   const gameId = useGameStore((store) => store.gameId);
@@ -19,7 +19,7 @@ export const App = () => {
   if (!state) {
     return (
       <main>
-        <p className={ui.hint}>Loading your game…</p>
+        <Hint>Loading your game…</Hint>
       </main>
     );
   }

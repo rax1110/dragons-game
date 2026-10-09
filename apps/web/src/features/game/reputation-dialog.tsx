@@ -1,33 +1,26 @@
-import ui from '../../shared/ui.module.css';
-import { useDialog } from '../../shared/use-dialog.ts';
+import { Button } from '../../shared/button.tsx';
+import { Dialog } from '../../shared/dialog.tsx';
+import { Hint } from '../../shared/note.tsx';
 import { selectBusy, useGameStore } from './game-store.ts';
 import styles from './reputation-dialog.module.css';
 
-type Props = { open: boolean; onClose: () => void };
+type Props = { onClose: () => void };
 
 const FACTIONS = ['people', 'state', 'underworld'] as const;
 
 const SCALE = 20;
 
-export const ReputationDialog = ({ open, onClose }: Props) => {
+export const ReputationDialog = ({ onClose }: Props) => {
   const reputation = useGameStore((store) => store.reputation);
   const busy = useGameStore(selectBusy);
   const investigate = useGameStore((store) => store.investigateReputation);
-  const ref = useDialog(open);
 
   return (
-    <dialog
-      ref={ref}
-      className={ui.sheet}
-      closedby="any"
-      aria-labelledby="reputation-title"
-      onClose={onClose}
-    >
-      <h2 id="reputation-title">Reputation</h2>
-      <p className={ui.hint}>
+    <Dialog title="Reputation" onClose={onClose}>
+      <Hint>
         Investigating costs a turn. Stealing lowers your standing with the state
         and leads to traps.
-      </p>
+      </Hint>
       {reputation ? (
         <dl className={styles.factions}>
           {FACTIONS.map((faction) => (
@@ -47,14 +40,11 @@ export const ReputationDialog = ({ open, onClose }: Props) => {
           ))}
         </dl>
       ) : (
-        <p className={ui.muted}>Not investigated yet.</p>
+        <Hint>Not investigated yet.</Hint>
       )}
-      <button type="button" disabled={busy} onClick={investigate}>
+      <Button variant="secondary" disabled={busy} onClick={investigate}>
         Investigate (costs a turn)
-      </button>
-      <button type="button" className={ui.close} onClick={onClose}>
-        Close
-      </button>
-    </dialog>
+      </Button>
+    </Dialog>
   );
 };

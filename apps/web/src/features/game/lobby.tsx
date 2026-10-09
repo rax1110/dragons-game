@@ -1,25 +1,24 @@
-import ui from '../../shared/ui.module.css';
-import {
-  CoinIcon,
-  FlameIcon,
-  HeartIcon,
-  HourglassIcon,
-} from '../../shared/icons.tsx';
+import { useEffect } from 'react';
+import { SpriteIcon } from '../../shared/sprite-icon.tsx';
+import { Button } from '../../shared/button.tsx';
+import { Alert } from '../../shared/note.tsx';
+import { deriveDragonFrame, Icons } from '../../shared/sprites.ts';
+import { preloadWorld } from '../world/world-view.tsx';
 import { selectBusy, useGameStore } from './game-store.ts';
 import styles from './lobby.module.css';
 
 const RULES = [
   {
-    Icon: HourglassIcon,
-    text: 'Each ad stays for a few turns. Solving, shopping and investigating take one turn each.',
+    frame: Icons.Sign,
+    text: 'Each quest stays on the board for a few turns. Solving, shopping and investigating take one turn each.',
   },
   {
-    Icon: CoinIcon,
-    text: 'A solved ad adds its reward to your gold and your score. Shopping spends gold, never score.',
+    frame: Icons.Gold,
+    text: 'A solved quest adds its reward to your gold and your score. Shopping spends gold, never score.',
   },
   {
-    Icon: HeartIcon,
-    text: 'A failed ad costs a life. A potion gives one back, an upgrade makes the ads easier.',
+    frame: Icons.Potion,
+    text: 'A failed quest costs a life. A potion gives one back, an upgrade makes the quests easier.',
   },
 ];
 
@@ -28,38 +27,36 @@ export const Lobby = () => {
   const error = useGameStore((store) => store.error);
   const createGame = useGameStore((store) => store.createGame);
 
+  useEffect(() => {
+    void preloadWorld();
+  }, []);
+
   return (
     <main className={styles.lobby}>
       <span className={styles.mark}>
-        <FlameIcon size={30} />
+        <SpriteIcon
+          frame={deriveDragonFrame(0)}
+          scale={4}
+          label="Your dragon"
+        />
       </span>
       <p className={styles.kicker}>Kingdom of Mugloar</p>
       <h1 className={styles.title}>Dragons of Mugloar</h1>
       <p className={styles.lede}>
-        Take on ads for gold, keep your dragon alive, and reach 1000 points.
+        Train your dragon, take on quests for gold, and reach 1000 points.
       </p>
-      <ul className={styles.rules}>
-        {RULES.map(({ Icon, text }) => (
+      <ul className={styles.rules} data-panel>
+        {RULES.map(({ frame, text }) => (
           <li key={text}>
-            <Icon size={20} />
+            <SpriteIcon frame={frame} scale={2} />
             <span>{text}</span>
           </li>
         ))}
       </ul>
-      {error && (
-        <p role="alert" className={ui.error}>
-          {error}
-        </p>
-      )}
-      <button
-        type="button"
-        data-variant="primary"
-        className={styles.cta}
-        disabled={busy}
-        onClick={createGame}
-      >
+      {error && <Alert>{error}</Alert>}
+      <Button className={styles.cta} disabled={busy} onClick={createGame}>
         Start a game
-      </button>
+      </Button>
     </main>
   );
 };

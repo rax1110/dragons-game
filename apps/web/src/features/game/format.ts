@@ -13,6 +13,9 @@ export const Risk = {
 export type Risk = (typeof Risk)[keyof typeof Risk];
 
 const MODERATE_SUCCESS_RATE = 0.3;
+const LAST_CHANCE_TURNS = 1;
+
+export const isLastChance = (ad: RankedAd) => ad.expiresIn <= LAST_CHANCE_TURNS;
 
 export const formatPercent = (rate: number) => `${Math.round(rate * 100)}%`;
 

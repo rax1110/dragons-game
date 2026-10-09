@@ -2,6 +2,7 @@ name: dragons
 
 services:
   app:
+    image: dragons
     build:
       context: .
       target: app
@@ -10,6 +11,7 @@ services:
 
   bot:
     profiles: [bot]
+    image: dragons
     build:
       context: .
       target: app

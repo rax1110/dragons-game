@@ -75,7 +75,7 @@ describe('game store', () => {
 
     expect(useGameStore.getState()).toMatchObject({
       state: solvedState,
-      lastEvent: event,
+      events: [event],
     });
     expect(gameApi.getAds).toHaveBeenCalledTimes(2);
   });

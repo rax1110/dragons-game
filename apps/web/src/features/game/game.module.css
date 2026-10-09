@@ -1,46 +1,55 @@
 .game {
+  --hotbar-height: calc(5.75rem + env(safe-area-inset-bottom));
+  --town-max: 40rem;
   display: grid;
   gap: 1rem;
-}
-
-.board {
-  display: grid;
-  gap: 0.75rem;
+  align-items: start;
+  padding-bottom: calc(1rem + var(--hotbar-height));
 
   @media (min-width: 48rem) {
-    grid-template-columns: repeat(2, 1fr);
+    padding-bottom: 1rem;
+  }
 
-    & > :first-child {
-      grid-column: 1 / -1;
+  @media (min-width: 64rem) {
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+    height: calc(100dvh - 2rem);
+    gap: 1.5rem;
+
+    &[data-quests] {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     }
   }
 }
 
-.over {
+.column {
   display: grid;
-  justify-items: center;
-  gap: 0.75rem;
-  padding: 3rem 1rem;
-  text-align: center;
+  gap: 1rem;
+
+  @media (min-width: 64rem) {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    min-height: 0;
+  }
 }
 
-.kicker {
-  font-size: 0.75rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--muted);
+.stage {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+
+  @media (min-width: 64rem) {
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+  }
 }
 
-.finalScore {
-  font-size: clamp(4rem, 18vw, 7rem);
-  color: var(--gold);
-  text-shadow: 0 0 40px rgb(242 193 78 / 0.4);
-}
+.town {
+  position: relative;
+  display: grid;
+  width: min(100%, var(--town-max));
+  margin-inline: auto;
 
-.verdict {
-  color: var(--muted);
-
-  &[data-reached] {
-    color: var(--safe);
+  @media (min-width: 64rem) {
+    min-height: 0;
   }
 }

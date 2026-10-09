@@ -85,12 +85,12 @@ export const ReputationSchema = z.object({
 export type Reputation = z.infer<typeof ReputationSchema>;
 
 export interface GameApi {
-  start(): Promise<GameState>;
-  ads(gameId: GameId): Promise<Ad[]>;
-  solve(gameId: GameId, adId: AdId): Promise<SolveResult>;
-  shop(gameId: GameId): Promise<ShopItem[]>;
-  buy(gameId: GameId, itemId: ItemId): Promise<BuyResult>;
-  reputation(gameId: GameId): Promise<Reputation>;
+  createGame(): Promise<GameState>;
+  getAds(gameId: GameId): Promise<Ad[]>;
+  solveAd(gameId: GameId, adId: AdId): Promise<SolveResult>;
+  getShop(gameId: GameId): Promise<ShopItem[]>;
+  buyItem(gameId: GameId, itemId: ItemId): Promise<BuyResult>;
+  investigateReputation(gameId: GameId): Promise<Reputation>;
 }
 
 export const GameApiErrorKind = {
@@ -105,8 +105,12 @@ export type GameApiErrorKind =
 export class GameApiError extends Error {
   readonly kind: GameApiErrorKind;
 
-  constructor(kind: GameApiErrorKind, message = kind) {
-    super(message);
+  constructor(
+    kind: GameApiErrorKind,
+    message: string = kind,
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
     this.name = 'GameApiError';
     this.kind = kind;
   }

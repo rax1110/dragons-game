@@ -21,12 +21,12 @@ const viableAd = decodeAd(fixtures.plainAd);
 const solved = SolveResultSchema.parse(fixtures.solved);
 
 const createFakeApi = (overrides: Partial<GameApi> = {}): GameApi => ({
-  start: vi.fn(async () => start),
-  ads: vi.fn(async () => (viableAd ? [viableAd] : [])),
-  solve: vi.fn(async () => solved),
-  shop: vi.fn(async () => ShopSchema.parse(fixtures.shop)),
-  buy: vi.fn(async () => BuyResultSchema.parse(fixtures.bought)),
-  reputation: vi.fn(async () => fixtures.reputation),
+  createGame: vi.fn(async () => start),
+  getAds: vi.fn(async () => (viableAd ? [viableAd] : [])),
+  solveAd: vi.fn(async () => solved),
+  getShop: vi.fn(async () => ShopSchema.parse(fixtures.shop)),
+  buyItem: vi.fn(async () => BuyResultSchema.parse(fixtures.bought)),
+  investigateReputation: vi.fn(async () => fixtures.reputation),
   ...overrides,
 });
 
@@ -46,11 +46,11 @@ const run = async (api: GameApi, from: GameState = start) => {
 
 describe('play', () => {
   it('plays turn by turn until lives run out', async () => {
-    const solve = [3, 2, 1, 0].reduce(
+    const solveAd = [3, 2, 1, 0].reduce(
       (mock, lives) => mock.mockResolvedValueOnce({ ...solved, lives }),
-      vi.fn<GameApi['solve']>(),
+      vi.fn<GameApi['solveAd']>(),
     );
-    const api = createFakeApi({ solve });
+    const api = createFakeApi({ solveAd });
 
     const { events, final } = await run(api);
 
@@ -64,7 +64,7 @@ describe('play', () => {
 
   it('heals before solving when lives are below target', async () => {
     const api = createFakeApi({
-      solve: vi.fn(async () => ({ ...solved, lives: 0 })),
+      solveAd: vi.fn(async () => ({ ...solved, lives: 0 })),
     });
 
     const { events } = await run(api, { ...start, lives: 2, gold: 60 });
@@ -79,21 +79,21 @@ describe('play', () => {
 
   it('refetches ads when the chosen one has expired', async () => {
     const api = createFakeApi({
-      solve: vi
-        .fn<GameApi['solve']>()
+      solveAd: vi
+        .fn<GameApi['solveAd']>()
         .mockRejectedValueOnce(new GameApiError(GameApiErrorKind.AdUnavailable))
         .mockResolvedValue({ ...solved, lives: 0 }),
     });
 
     const { events } = await run(api);
 
-    expect(api.ads).toHaveBeenCalledTimes(2);
+    expect(api.getAds).toHaveBeenCalledTimes(2);
     expect(events).toHaveLength(1);
   });
 
   it('gives up after repeated expired ads', async () => {
     const api = createFakeApi({
-      solve: vi.fn(async () => {
+      solveAd: vi.fn(async () => {
         throw new GameApiError(GameApiErrorKind.AdUnavailable);
       }),
     });
@@ -105,7 +105,7 @@ describe('play', () => {
 
   it('ends the game when the API reports it is over', async () => {
     const api = createFakeApi({
-      solve: vi.fn(async () => {
+      solveAd: vi.fn(async () => {
         throw new GameApiError(GameApiErrorKind.GameOver);
       }),
     });
@@ -118,7 +118,7 @@ describe('play', () => {
 
   it('propagates unexpected errors', async () => {
     const api = createFakeApi({
-      solve: vi.fn(async () => {
+      solveAd: vi.fn(async () => {
         throw new Error('network down');
       }),
     });
@@ -128,7 +128,7 @@ describe('play', () => {
 
   it('stops at the turn limit', async () => {
     const api = createFakeApi({
-      solve: vi.fn(async () => ({ ...solved, turn: POLICY.maxTurns })),
+      solveAd: vi.fn(async () => ({ ...solved, turn: POLICY.maxTurns })),
     });
 
     const { events, final } = await run(api);
@@ -138,7 +138,7 @@ describe('play', () => {
   });
 
   it('stops when there is nothing to do', async () => {
-    const api = createFakeApi({ ads: vi.fn(async () => []) });
+    const api = createFakeApi({ getAds: vi.fn(async () => []) });
 
     const { events, final } = await run(api);
 

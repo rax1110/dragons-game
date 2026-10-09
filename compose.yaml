@@ -7,3 +7,10 @@ services:
       target: app
     ports:
       - '3000:3000'
+
+  bot:
+    profiles: [bot]
+    build:
+      context: .
+      target: app
+    command: node dist/cli/play.js

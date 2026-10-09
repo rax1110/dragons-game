@@ -10,6 +10,7 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "node dist/main.js",
+    "play": "node dist/cli/play.js",
     "test": "vitest run"
   },
   "dependencies": {

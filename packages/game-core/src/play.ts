@@ -20,7 +20,7 @@ const perform = async (
 ): Promise<TurnEvent> => {
   switch (move.type) {
     case ActionType.Solve: {
-      const result = await api.solve(state.gameId, move.ad.adId);
+      const result = await api.solveAd(state.gameId, move.ad.adId);
 
       return {
         move,
@@ -29,7 +29,7 @@ const perform = async (
       };
     }
     case ActionType.Buy: {
-      const result = await api.buy(state.gameId, move.item.id);
+      const result = await api.buyItem(state.gameId, move.item.id);
       const message = result.shoppingSuccess
         ? `Bought ${move.item.name}`
         : `Could not buy ${move.item.name}`;
@@ -43,13 +43,13 @@ export async function* play(
   api: GameApi,
   start: GameState,
 ): AsyncGenerator<TurnEvent, GameState> {
-  const shop = await api.shop(start.gameId);
+  const shop = await api.getShop(start.gameId);
   let state = start;
   let dryTurns = 0;
   let unavailableAds = 0;
 
   while (state.lives > 0 && state.turn < POLICY.maxTurns) {
-    const ads = rankAds(await api.ads(state.gameId), state.lives);
+    const ads = rankAds(await api.getAds(state.gameId), state.lives);
     const action = decide(state, ads, shop, dryTurns);
 
     if (action.type === ActionType.Stop) return state;
